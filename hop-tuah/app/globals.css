@@ -1,6 +1,7 @@
 
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @tailwind base;
@@ -27,6 +28,12 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+input::placeholder {
+  font-family: 'Fredoka', sans-serif; /* Apply Fredoka font to placeholder */
+  font-size: 1.5rem;
+  color: #8FA6C3; /* Change the placeholder text color */
 }
 
 @media (prefers-color-scheme: dark) {
