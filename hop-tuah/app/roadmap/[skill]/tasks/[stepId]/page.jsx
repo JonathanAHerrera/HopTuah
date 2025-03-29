@@ -1,14 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Fredoka } from "next/font/google";
+import { Fredoka, Open_Sans } from "next/font/google";
 import { useParams, useRouter } from "next/navigation";
 
-// Initialize the Fredoka font
+// Initialize the fonts
 const fredoka = Fredoka({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
+});
+
+const open_sans = Open_Sans({ 
+  subsets: ["latin"], 
+  display: "swap"
 });
 
 export default function TasksPage() {
@@ -90,7 +95,7 @@ export default function TasksPage() {
   };
 
   // Toggle task completion
-  const toggleTaskCompletion = (taskIndex) => {
+  const handleCheckboxChange = (taskIndex) => {
     let updatedCompletedTasks = [...completedTasks];
 
     if (completedTasks.includes(taskIndex)) {
@@ -209,22 +214,82 @@ export default function TasksPage() {
 
   return (
     <div
-      className={fredoka.className}
       style={{
-        background: "#F5F7FA",
+        display: "flex",
+        flexDirection: "column",
         minHeight: "100vh",
-        padding: "20px",
+        background: "linear-gradient(to bottom, #8FA6C3 0%, white 50%)",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      {/* Header */}
+      {/* Cloud decorations */}
+      <img 
+        src="/cloud.svg" 
+        alt="Cloud"
+        style={{
+          position: "absolute",
+          top: "10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "120px",
+          zIndex: 1,
+          opacity: 0.9
+        }}
+      />
+      
+      <img 
+        src="/cloud.svg" 
+        alt="Cloud"
+        style={{
+          position: "absolute",
+          top: "26%",
+          right: "7%",
+          width: "150px",
+          zIndex: 1,
+          opacity: 0.9
+        }}
+      />
+      
+      <img 
+        src="/cloud.svg" 
+        alt="Cloud"
+        style={{
+          position: "absolute",
+          top: "30%",
+          left: "5%",
+          width: "150px",
+          zIndex: 1,
+          opacity: 0.9
+        }}
+      />
+
+      {/* Main content */}
       <div
         style={{
+          width: "100%",
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "row",
           alignItems: "center",
-          marginBottom: "20px",
+          justifyContent: "space-between",
+          padding: "20px",
+          position: "relative",
+          zIndex: 2,
         }}
       >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src="/bunnyONTop.svg"
+            alt="logo"
+            style={{ width: "7vw", height: "7vh" }}
+          />
+          <img
+            src="/Words.svg"
+            alt="logo"
+            style={{ width: "7vw", height: "7vh" }}
+          />
+        </div>
+
         <button
           onClick={goBackToRoadmap}
           style={{
@@ -242,254 +307,212 @@ export default function TasksPage() {
         >
           <span style={{ marginRight: "5px" }}>←</span> Back to Roadmap
         </button>
-
-        <div>
-          <span style={{ color: "#24154A", fontWeight: "bold" }}>
-            {completedTasks.length} / {tasks.length} Tasks Completed
-          </span>
-        </div>
       </div>
 
-      {/* Step title */}
       <div
         style={{
-          background: "#8FA6C3",
-          padding: "30px",
-          borderRadius: "15px",
-          marginBottom: "30px",
-        }}
-      >
-        <h1
-          style={{
-            color: "white",
-            fontSize: "2.5rem",
-            margin: "0",
-            textAlign: "center",
-          }}
-        >
-          {stepTitle}
-        </h1>
-        <p
-          style={{
-            color: "#24154A",
-            fontSize: "1.2rem",
-            margin: "10px 0 0 0",
-            textAlign: "center",
-            fontWeight: "500",
-          }}
-        >
-          Complete all tasks to master this step
-        </p>
-      </div>
-
-      {/* Tasks list */}
-      <div
-        style={{
+          width: "100%",
           display: "flex",
           flexDirection: "column",
           gap: "20px",
+          padding: "0 5%",
+          position: "relative",
+          zIndex: 2,
         }}
       >
-        {tasks.map((task, index) => (
-          <div
-            key={index}
-            style={{
-              background: "white",
-              borderRadius: "10px",
-              padding: "20px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.05)",
-              border: completedTasks.includes(index)
-                ? "2px solid #8FA6C3"
-                : "1px solid #eee",
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            marginTop: "40px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h1 
+            className={fredoka.className} 
+            style={{ 
+              fontSize: "4.0rem", 
+              fontWeight: "600", 
+              color: "#24154A", 
+              paddingTop: "2vw",
+              textAlign: "center"
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-              }}
-            >
-              <div
-                onClick={() => toggleTaskCompletion(index)}
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  backgroundColor: completedTasks.includes(index)
-                    ? "#8FA6C3"
-                    : "white",
-                  border: completedTasks.includes(index)
-                    ? "none"
-                    : "2px solid #24154A",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  marginRight: "15px",
-                  flexShrink: 0,
-                }}
-              >
-                {completedTasks.includes(index) && (
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M20 6L9 17L4 12"
-                      stroke="#24154A"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-              </div>
-              <div>
-                <h3
-                  style={{
-                    margin: "0 0 10px 0",
-                    color: "#24154A",
-                    fontSize: "1.3rem",
-                    fontWeight: "600",
-                    textDecoration: completedTasks.includes(index)
-                      ? "line-through"
-                      : "none",
-                  }}
-                >
-                  {task.task}
-                </h3>
-                <p
-                  style={{
-                    margin: "0 0 10px 0",
-                    color: "#666",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Estimated time: {task.estimatedTime} minutes
-                </p>
+            {stepTitle} 
+          </h1>
 
-                {/* Resources */}
-                {task.resources && task.resources.length > 0 && (
-                  <div>
-                    <h4
-                      style={{
-                        margin: "10px 0",
-                        color: "#24154A",
-                        fontSize: "1rem",
-                      }}
-                    >
-                      Helpful Resources:
-                    </h4>
-                    <ul
-                      style={{
-                        margin: "0",
-                        paddingLeft: "20px",
-                      }}
-                    >
-                      {task.resources.map((resource, i) => (
-                        <li key={i} style={{ marginBottom: "5px" }}>
-                          <a
-                            href={
-                              typeof resource === "string"
-                                ? resource
-                                : resource.url || "#"
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              color: "#8FA6C3",
-                              textDecoration: "underline",
-                            }}
-                          >
-                            {typeof resource === "string"
-                              ? resource
-                              : resource.title || resource.url || resource}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
+          <div 
+            className={fredoka.className}
+            style={{
+              fontSize: "2.0rem",
+              color: "#8FA5C3",
+              marginBottom: "20px",
+              fontWeight: "bold",
+              paddingTop: "1vw"
+            }}
+          >
+            Checklist: {completedTasks.length}/{tasks.length} completed
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* Complete all button */}
-      {tasks.length > 0 && completedTasks.length < tasks.length && (
         <div
           style={{
             display: "flex",
-            justifyContent: "center",
-            marginTop: "30px",
+            flexDirection: "column",
+            gap: "15px",
+            width: "80vw",
+            margin: "0 auto",
+            paddingBottom: "50px",
           }}
         >
-          <button
-            onClick={() => {
-              // Mark all tasks as completed
-              const allTaskIndices = Array.from(
-                { length: tasks.length },
-                (_, i) => i
-              );
-              setCompletedTasks(allTaskIndices);
-              localStorage.setItem(
-                `${params.skill}_step_${params.stepId}_completed_tasks`,
-                JSON.stringify(allTaskIndices)
-              );
-              updateStepCompletion(true);
-            }}
+          {tasks.map((task, index) => (
+            <div 
+              key={index} 
+              style={{ 
+                display: "flex", 
+                alignItems: "center",
+                backgroundColor: "white",
+                padding: "15px",
+                borderRadius: "10px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={completedTasks.includes(index)}
+                onChange={() => handleCheckboxChange(index)}
+                style={{ 
+                  marginRight: "15px", 
+                  width: "20px",
+                  height: "20px",
+                  accentColor: "#24154A"
+                }}
+              />
+              <label 
+                className={open_sans.className} 
+                style={{ 
+                  fontSize: "1.5rem", 
+                  color: "#24154A",
+                  textDecoration: completedTasks.includes(index) ? "line-through" : "none"
+                }}
+              >
+                {task.task}
+              </label>
+              <div style={{ display: "flex", gap: "10px", marginLeft: "auto" }}>
+                {task.estimatedTime && (
+                  <div
+                    className={fredoka.className}
+                    style={{
+                      backgroundColor: "#F0F4F8",
+                      color: "#24154A",
+                      padding: "6px 12px",
+                      borderRadius: "20px",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {task.estimatedTime} mins
+                  </div>
+                )}
+                <button 
+                  className={fredoka.className} 
+                  style={buttonStyle}
+                  onClick={() => window.open(task.resources?.[0], '_blank')}
+                >
+                  Resource
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Complete all button */}
+        {tasks.length > 0 && completedTasks.length < tasks.length && (
+          <div
             style={{
-              background: "#24154A",
-              color: "white",
-              border: "none",
-              borderRadius: "50px",
-              padding: "15px 30px",
-              fontSize: "1.2rem",
-              fontWeight: "bold",
-              cursor: "pointer",
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+              marginBottom: "30px",
             }}
           >
-            Mark All Tasks Complete
-          </button>
-        </div>
-      )}
+            <button
+              onClick={() => {
+                // Mark all tasks as completed
+                const allTaskIndices = Array.from(
+                  { length: tasks.length },
+                  (_, i) => i
+                );
+                setCompletedTasks(allTaskIndices);
+                localStorage.setItem(
+                  `${params.skill}_step_${params.stepId}_completed_tasks`,
+                  JSON.stringify(allTaskIndices)
+                );
+                updateStepCompletion(true);
+              }}
+              className={fredoka.className}
+              style={{
+                background: "#24154A",
+                color: "white",
+                border: "none",
+                borderRadius: "50px",
+                padding: "15px 30px",
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Mark All Tasks Complete
+            </button>
+          </div>
+        )}
 
-      {/* Back to roadmap button */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "30px",
-        }}
-      >
-        <button
-          onClick={goBackToRoadmap}
-          style={{
-            background:
-              completedTasks.length === tasks.length
-                ? "#8FA6C3"
-                : "transparent",
-            color: completedTasks.length === tasks.length ? "white" : "#24154A",
-            border:
-              completedTasks.length === tasks.length
-                ? "none"
-                : "2px solid #24154A",
-            borderRadius: "50px",
-            padding: "15px 30px",
-            fontSize: "1.2rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          {completedTasks.length === tasks.length
-            ? "Step Completed! Return to Roadmap"
-            : "Return to Roadmap"}
-        </button>
+        {/* Back to roadmap button - shown when all tasks completed */}
+        {completedTasks.length === tasks.length && tasks.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+              marginBottom: "30px",
+            }}
+          >
+            <button
+              onClick={goBackToRoadmap}
+              className={fredoka.className}
+              style={{
+                background: "#8FA6C3",
+                color: "white",
+                border: "none",
+                borderRadius: "50px",
+                padding: "15px 30px",
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Step Completed! Return to Roadmap
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+const buttonStyle = {
+  backgroundColor: "transparent",
+  color: "#24154A",
+  border: "2px solid #24154A",
+  borderRadius: "20px",
+  padding: "6px 12px",
+  cursor: "pointer",
+  fontSize: "1rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};

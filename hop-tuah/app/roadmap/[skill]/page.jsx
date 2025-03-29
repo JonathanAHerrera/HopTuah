@@ -17,13 +17,49 @@ export default function SkillRoadmapPage() {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [progress, setProgress] = useState(0); // Initialize at 0, will calculate dynamically
+  const [progress, setProgress] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([]);
 
+  // Load completed steps from localStorage
   useEffect(() => {
     if (params.skill) {
+      // Get saved completed steps from localStorage
+      const savedCompletedSteps = localStorage.getItem(`${params.skill}_completed_steps`);
+      if (savedCompletedSteps) {
+        const parsedSteps = JSON.parse(savedCompletedSteps);
+        setCompletedSteps(parsedSteps);
+        // If roadmap is already loaded, update progress
+        if (roadmap) {
+          const progressPercentage = Math.round((parsedSteps.length / roadmap.length) * 100);
+          setProgress(progressPercentage);
+        }
+      }
+      
       fetchRoadmap(params.skill);
     }
   }, [params.skill]);
+
+  // Add an effect to check localStorage for changes when the component is focused
+  useEffect(() => {
+    const handleFocus = () => {
+      if (params.skill) {
+        const savedCompletedSteps = localStorage.getItem(`${params.skill}_completed_steps`);
+        if (savedCompletedSteps) {
+          const parsedSteps = JSON.parse(savedCompletedSteps);
+          setCompletedSteps(parsedSteps);
+          if (roadmap) {
+            const progressPercentage = Math.round((parsedSteps.length / roadmap.length) * 100);
+            setProgress(progressPercentage);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [params.skill, roadmap]);
 
   const fetchRoadmap = async (skill) => {
     setLoading(true);
@@ -47,8 +83,12 @@ export default function SkillRoadmapPage() {
       // Use all items instead of just the first 3
       setRoadmap(data.data);
       
-      // Calculate progress based on completed items (0 and 1)
-      const completedItems = [0, 1, 2, 3 , 4]; // The indices of completed items
+      // Load completed steps from localStorage
+      const savedCompletedSteps = localStorage.getItem(`${skill}_completed_steps`);
+      const completedItems = savedCompletedSteps ? JSON.parse(savedCompletedSteps) : [];
+      setCompletedSteps(completedItems);
+      
+      // Calculate progress based on completed items
       const progressPercentage = data.data.length > 0 
         ? Math.round((completedItems.length / data.data.length) * 100) 
         : 0;
@@ -172,12 +212,19 @@ export default function SkillRoadmapPage() {
           {/* Profile */}
           <div>
             <button
-              onClick={() => router.push("/profile")}
               style={{
-                background: "transparent",
-                border: "none",
+                backgroundColor: "transparent",
+                color: "black",
+                border: "3px solid black",
+                borderRadius: "20px",
+                padding: "6px 12px",
+                fontSize: "14px",
                 cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
               }}
+              onClick={() => (window.location.href = "/login")}
             >
               <svg
                 width="30"
@@ -187,15 +234,22 @@ export default function SkillRoadmapPage() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
-                  stroke="#24154A"
+                  d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"
+                  stroke="black"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 <path
-                  d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
-                  stroke="#24154A"
+                  d="M16 17L21 12L16 7"
+                  stroke="black"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M21 12H9"
+                  stroke="black"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -371,10 +425,8 @@ export default function SkillRoadmapPage() {
           {/* Roadmap Steps */}
           {roadmap &&
             (() => {
-              // Define completed items
-              const completedItems = [0, 1]; // Indices of completed items
               const firstIncompleteIndex = roadmap.findIndex(
-                (_, index) => !completedItems.includes(index)
+                (_, index) => !completedSteps.includes(index)
               );
 
               return roadmap.map((item, index) => (
@@ -394,10 +446,10 @@ export default function SkillRoadmapPage() {
                       width: "40px",
                       height: "40px",
                       borderRadius: "50%",
-                      backgroundColor: completedItems.includes(index)
+                      backgroundColor: completedSteps.includes(index)
                         ? "#8FA6C3"
                         : "white",
-                      border: completedItems.includes(index)
+                      border: completedSteps.includes(index)
                         ? "none"
                         : "2px solid #24154A",
                       display: "flex",
@@ -406,7 +458,7 @@ export default function SkillRoadmapPage() {
                       zIndex: "2",
                     }}
                   >
-                    {completedItems.includes(index) ? (
+                    {completedSteps.includes(index) ? (
                       <svg
                         width="24"
                         height="24"
@@ -443,10 +495,10 @@ export default function SkillRoadmapPage() {
                       borderRadius: "10px",
                       padding: "20px",
                       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-                      border: completedItems.includes(index)
+                      border: completedSteps.includes(index)
                         ? "2px solid #8FA6C3"
                         : "1px solid #eee",
-                      cursor: "pointer", // Add cursor pointer to indicate it's clickable
+                      cursor: "pointer",
                     }}
                   >
                     <h3
@@ -461,16 +513,16 @@ export default function SkillRoadmapPage() {
                     </h3>
                     <p
                       style={{
-                        color: completedItems.includes(index)
+                        color: completedSteps.includes(index)
                           ? "#8FA6C3"
                           : "#555",
                         margin: "0",
-                        fontWeight: completedItems.includes(index)
+                        fontWeight: completedSteps.includes(index)
                           ? "bold"
                           : "normal",
                       }}
                     >
-                      {completedItems.includes(index)
+                      {completedSteps.includes(index)
                         ? "Complete!"
                         : item.description}
                     </p>
