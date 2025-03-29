@@ -1,10 +1,15 @@
-import { Geist, Geist_Mono, Fredoka } from "next/font/google";
+import { Geist, Geist_Mono, Fredoka, Open_Sans } from "next/font/google";
 import "./globals.css";
 
 
 const fredoka = Fredoka({ 
   subsets: ["latin"], 
   weight: ["500"], 
+  display: "swap"
+});
+
+const open_sans = Open_Sans({ 
+  subsets: ["latin"], 
   display: "swap"
 });
 

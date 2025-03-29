@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Fredoka } from 'next/font/google';
+import { Fredoka, Open_Sans } from 'next/font/google';
 
 
 // Initialize the Fredoka font
@@ -10,6 +10,11 @@ const fredoka = Fredoka({
   subsets: ['latin'],
   display: 'swap',
 });
+
+const open_sans = Open_Sans({ 
+    subsets: ["latin"], 
+    display: "swap"
+  });
 
 export default function HomePage() {
   const [completedTasks, setCompletedTasks] = useState({
@@ -143,7 +148,7 @@ export default function HomePage() {
             }}
         >
             <h1 className={fredoka.className} 
-                style={{ fontSize: "4.0rem", fontWeight: "600", color: "#24154A", paddingTop:"10vw" }}>
+                style={{ fontSize: "4.0rem", fontWeight: "600", color: "#24154A", paddingTop:"8vw" }}>
                 Intro
             </h1>
 
@@ -173,12 +178,12 @@ export default function HomePage() {
               type="checkbox"
               checked={completedTasks.article1}
               onChange={() => handleCheckboxChange("article1")}
-              style={{ marginRight: "10px", borderRadius: "3px" }}
+              style={{ marginRight: "10px", border: "5px solid #24154A", borderRadius: "3px" }}
             />
-            <label>do this</label>
+            <label className={open_sans.className} style = {{fontSize: "2.0rem", color: "#24154A"}}>do this</label>
             <div style={{ display: "flex", gap: "10px", marginLeft: "auto" }}>
-              <button style={buttonStyle}>Article</button>
-              <button style={buttonStyle}>Video</button>
+              <button className={fredoka.className} style={buttonStyle}>Article</button>
+              <button className={fredoka.className} style={buttonStyle}>Video</button>
             </div>
           </div>
 
@@ -187,12 +192,12 @@ export default function HomePage() {
               type="checkbox"
               checked={completedTasks.video1}
               onChange={() => handleCheckboxChange("video1")}
-              style={{ marginRight: "10px" }}
+              style={{ marginRight: "10px", border: "5px solid #24154A", borderRadius: "3px" }}
             />
-            <label>do this</label>
+            <label className={open_sans.className} style = {{fontSize: "2.0rem", color: "#24154A"}}>do this</label>
             <div style={{ display: "flex", gap: "10px", marginLeft: "auto" }}>
-              <button style={buttonStyle}>Video</button>
-              <button style={buttonStyle}>Article</button>
+              <button className={fredoka.className} style={buttonStyle}>Video</button>
+              <button className={fredoka.className} style={buttonStyle}>Article</button>
             </div>
           </div>
         </div>
@@ -204,11 +209,11 @@ export default function HomePage() {
 const buttonStyle = {
   backgroundColor: "transparent",
   color: "#24154A",
-  border: "2px solid #24154A",
+  border: "5px solid #24154A",
   borderRadius: "20px",
   padding: "6px 12px",
   cursor: "pointer",
-  fontSize: "14px",
+  fontSize: "2.0rem",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
