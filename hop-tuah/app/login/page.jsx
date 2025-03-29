@@ -67,37 +67,32 @@ export default function RoadmapPage() {
     >
       {/* Cloud decorations */}
 
-      
-      <img 
-        src="/cloud.svg" 
-        alt="" 
+      <img
+        src="/cloud.svg"
+        alt=""
         style={{
           position: "absolute",
           top: "10%",
           right: "15%",
           width: "180px",
           zIndex: 1,
-          opacity: 0.9
+          opacity: 0.9,
         }}
       />
-      
-      <img 
-        src="/cloud.svg" 
-        alt="" 
+
+      <img
+        src="/cloud.svg"
+        alt=""
         style={{
           position: "absolute",
           top: "20%",
           left: "10%",
           width: "150px",
           zIndex: 1,
-          opacity: 0.9
+          opacity: 0.9,
         }}
       />
-      
-      
-      
-      
-      
+
       {/* Main content */}
       <div
         style={{
@@ -135,7 +130,6 @@ export default function RoadmapPage() {
             style={{ width: "7vw", height: "7vh" }}
           />
         </div>
-        
       </div>
       <div
         style={{
@@ -154,8 +148,17 @@ export default function RoadmapPage() {
           alt="logo"
           style={{ width: "20vw", height: "20vh" }}
         />
-        <h1 className={fredoka.className} style={{ fontSize: "6rem", fontWeight: "600", color: "#24154A" }}> 
-          LOGIN 
+        <h1
+          className={fredoka.className}
+          style={{ fontSize: "6rem", fontWeight: "600", color: "#24154A" }}
+        >
+          LOGIN
+        </h1>
+        <h1
+          className={fredoka.className}
+          style={{ fontSize: "3rem", fontWeight: "600", color: "#8FA5C3" }}
+        >
+          Your Roadmap For Learning
         </h1>
         <div
           style={{
@@ -177,7 +180,7 @@ export default function RoadmapPage() {
             placeholder="Username"
             type="username"
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 window.location.href = "/roadmap";
               }
             }}
@@ -189,16 +192,14 @@ export default function RoadmapPage() {
               color: "black",
               fontSize: "1.5rem",
               height: "5vh",
-              paddingLeft: "1vw"
+              paddingLeft: "1vw",
             }}
-            
-          
           />
           <Input
             placeholder="Password"
             type="password"
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 window.location.href = "/roadmap";
               }
             }}
@@ -210,10 +211,8 @@ export default function RoadmapPage() {
               color: "black",
               fontSize: "1.5rem",
               height: "5vh",
-              paddingLeft: "1vw"
+              paddingLeft: "1vw",
             }}
-            
-          
           />
           <button
             style={{
@@ -232,62 +231,83 @@ export default function RoadmapPage() {
               fontSize: "25px", // Adjust the font size if needed
               fontWeight: "500",
             }}
-            onClick={() => window.location.href = "/roadmap"} // Redirect to login page
+            onClick={() => (window.location.href = "/roadmap")} // Redirect to login page
           >
             Enter
           </button>
         </div>
-        
+
         {loading && (
-          <div className={fredoka.className} style={{ marginTop: "20px", fontSize: "1.5rem", color: "#24154A" }}>
+          <div
+            className={fredoka.className}
+            style={{ marginTop: "20px", fontSize: "1.5rem", color: "#24154A" }}
+          >
             Generating your roadmap...
           </div>
         )}
-        
+
         {error && (
-          <div className={fredoka.className} style={{ 
-            marginTop: "20px", 
-            padding: "10px 20px", 
-            backgroundColor: "rgba(255, 0, 0, 0.1)", 
-            borderRadius: "8px",
-            color: "red"
-          }}>
+          <div
+            className={fredoka.className}
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              backgroundColor: "rgba(255, 0, 0, 0.1)",
+              borderRadius: "8px",
+              color: "red",
+            }}
+          >
             {error}
           </div>
         )}
-        
+
         {roadmap && (
-          <div style={{ 
-            width: "85%", 
-            marginTop: "30px",
-            maxHeight: "50vh",
-            overflowY: "auto",
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
-            borderRadius: "20px",
-            padding: "20px",
-            border: "2px solid #24154A"
-          }}>
-            <h2 className={fredoka.className} style={{ 
-              fontSize: "2rem", 
-              color: "#24154A", 
-              textAlign: "center",
-              marginBottom: "20px" 
-            }}>
+          <div
+            style={{
+              width: "85%",
+              marginTop: "30px",
+              maxHeight: "50vh",
+              overflowY: "auto",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              borderRadius: "20px",
+              padding: "20px",
+              border: "2px solid #24154A",
+            }}
+          >
+            <h2
+              className={fredoka.className}
+              style={{
+                fontSize: "2rem",
+                color: "#24154A",
+                textAlign: "center",
+                marginBottom: "20px",
+              }}
+            >
               Your Roadmap for: {skill}
             </h2>
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+            >
               {roadmap.map((item, index) => (
-                <div key={index} style={{
-                  backgroundColor: "white",
-                  borderRadius: "12px",
-                  padding: "15px",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-                }}>
-                  <h3 className={fredoka.className} style={{ fontSize: "1.2rem", color: "#24154A" }}>
+                <div
+                  key={index}
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "12px",
+                    padding: "15px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <h3
+                    className={fredoka.className}
+                    style={{ fontSize: "1.2rem", color: "#24154A" }}
+                  >
                     {index + 1}. {item.title}
                   </h3>
-                  <p style={{ marginTop: "8px", color: "#333" }}>{item.description}</p>
+                  <p style={{ marginTop: "8px", color: "#333" }}>
+                    {item.description}
+                  </p>
                 </div>
               ))}
             </div>
