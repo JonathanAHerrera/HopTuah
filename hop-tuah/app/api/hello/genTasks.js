@@ -26,7 +26,7 @@ async function generateTasks() {
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: "You are an assistant that outputs valid JSON roadmaps." },
+        { role: "system", content: "You are an assistant that outputs valid JSON roadmaps with links to resources." },
         { role: "user", content: prompt }
       ],
       temperature: 0.7, // Adjust creativity level
