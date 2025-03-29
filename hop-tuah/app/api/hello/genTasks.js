@@ -22,7 +22,7 @@ async function generateTasks() {
       apiKey: apiKey,
     });
 
-    // Make the API request
+    // Make the API request for OpenAI, test on Postman
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
