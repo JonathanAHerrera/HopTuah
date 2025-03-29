@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Fredoka } from 'next/font/google';
 import { useParams, useRouter } from 'next/navigation';
+import { generateRoadmap } from "../../actions/notionExport";
 
 // Initialize the Fredoka font
 const fredoka = Fredoka({ 
@@ -19,6 +20,9 @@ export default function SkillRoadmapPage() {
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
+  const [exporting, setExporting] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
+  const [notionUrl, setNotionUrl] = useState("");
 
   // Load completed steps from localStorage
   useEffect(() => {
@@ -107,6 +111,27 @@ export default function SkillRoadmapPage() {
     
     // Navigate to the tasks page for this step
     router.push(`/roadmap/${params.skill}/tasks/${stepIndex}`);
+  };
+
+  const handleExportToNotion = async () => {
+    if (!roadmap) return;
+    
+    try {
+      setExporting(true);
+      const result = await generateRoadmap(params.skill, roadmap);
+      setNotionUrl(result.notionPageUrl);
+      setExportSuccess(true);
+      
+      // Automatically reset after 5 seconds
+      setTimeout(() => {
+        setExportSuccess(false);
+      }, 5000);
+    } catch (error) {
+      console.error("Failed to export to Notion:", error);
+      alert("Failed to export to Notion. Please check your API keys and try again.");
+    } finally {
+      setExporting(false);
+    }
   };
 
   if (loading) {
@@ -346,6 +371,66 @@ export default function SkillRoadmapPage() {
                 }}
               ></div>
             </div>
+          </div>
+
+          {/* Notion Export Button */}
+          <div style={{ marginTop: "15px" }}>
+            <button
+              onClick={handleExportToNotion}
+              disabled={exporting || !roadmap}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#F7F6F3", // Notion color
+                color: "#37352F",
+                border: "1px solid #E7E6E4",
+                borderRadius: "4px",
+                padding: "8px 16px",
+                fontSize: "0.9rem",
+                fontWeight: "500",
+                cursor: exporting ? "default" : "pointer",
+                opacity: exporting ? 0.7 : 1,
+                transition: "all 0.2s ease",
+                margin: "0 auto",
+              }}
+            >
+              {exporting ? (
+                "Exporting..."
+              ) : (
+                <>
+                  <svg 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    style={{ marginRight: "8px" }}
+                  >
+                    <path d="M4 16.5V18.5C4 19.0523 4.44772 19.5 5 19.5H19C19.5523 19.5 20 19.0523 20 18.5V16.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M12 4.5V15.5M12 15.5L16 11.5M12 15.5L8 11.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Export to Notion
+                </>
+              )}
+            </button>
+            
+            {exportSuccess && (
+              <div style={{ 
+                marginTop: "10px", 
+                color: "#37352F", 
+                fontSize: "0.9rem",
+                textAlign: "center" 
+              }}>
+                Successfully exported! <a 
+                  href={notionUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ color: "#2E6FEB", textDecoration: "underline" }}
+                >
+                  Open in Notion
+                </a>
+              </div>
+            )}
           </div>
         </div>
 

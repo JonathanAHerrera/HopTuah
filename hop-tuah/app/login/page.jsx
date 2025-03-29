@@ -59,7 +59,7 @@ export default function RoadmapPage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        height: "120vh",
         backgroundColor: "white",
         position: "relative",
         overflow: "hidden",
@@ -117,12 +117,13 @@ export default function RoadmapPage() {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
+            marginTop: "30px",
           }}
         >
           <img
             src="/bunnyONTop.svg"
             alt="logo"
-            style={{ width: "7vw", height: "7vh" }}
+            style={{ width: "7vw", height: "7vh", marginRight: "10px" }}
           />
           <img
             src="/Words.svg"
