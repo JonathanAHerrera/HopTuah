@@ -1,85 +1,84 @@
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 export async function POST(request) {
-  const body = await request.json();
-  const { skill } = body;
-  
-  if (!skill) {
-    return Response.json({ error: 'Skill is required' }, { status: 400 });
-  }
-  
   try {
-    // Generate roadmap using OpenAI
-    const roadmap = await generateRoadmapWithOpenAI(skill);
-    
-    return Response.json({ 
-      message: 'Roadmap generated successfully',
-      data: roadmap
-    });
-  } catch (error) {
-    console.error('Error generating roadmap:', error);
-    return Response.json({ 
-      error: 'Failed to generate roadmap',
-      message: error.message 
-    }, { status: 500 });
-  }
-} 
+    const { skill } = await request.json();
 
-async function generateRoadmapWithOpenAI(skill) {
-  // Check if OpenAI API key is available
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error('OpenAI API key is not configured');
-  }
-  
-  const prompt = `Generate a comprehensive learning roadmap for ${skill}. 
-  Please provide 10 major concepts/steps a person should master, presented as a list. 
-  For each concept, include a brief description of what it entails.
-  Format the response as a JSON array with objects containing 'title' and 'description' fields.`;
+    if (!skill) {
+      return NextResponse.json(
+        { error: "Skill parameter is required" },
+        { status: 400 }
+      );
+    }
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
+    // Generate roadmap with OpenAI
+    const roadmapResponse = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       messages: [
         {
-          role: 'system',
-          content: 'You are a helpful assistant that generates learning roadmaps for various skills.'
+          role: "system",
+          content: "You are a helpful AI assistant that creates educational roadmaps for learning new skills.",
         },
         {
-          role: 'user',
-          content: prompt
-        }
+          role: "user",
+          content: `Create a 10-step roadmap for learning ${skill}. For each step, provide a title and a brief description. Return the response as a JSON array of objects with 'title' and 'description' fields. Each step should be logical and help the user progress from beginner to intermediate level.`,
+        },
       ],
-      temperature: 0.7,
-      max_tokens: 2048
-    })
-  });
+      response_format: { type: "json_object" },
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    console.log( "OpenAI key: ", apiKey );
-    throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
-  }
-
-  const data = await response.json();
-  const content = data.choices[0].message.content;
-  
-  try {
-    // Extract the JSON array from the response
-    // First attempt to parse the entire content as JSON
-    return JSON.parse(content);
-  } catch (e) {
-    // If that fails, try to extract JSON from the text response
-    const jsonMatch = content.match(/\[[\s\S]*\]/);
-    console.log( "had to extract json from the text response" );
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
+    // Parse the roadmap response
+    const roadmapData = JSON.parse(roadmapResponse.choices[0].message.content);
     
-    // If we still can't parse the JSON, throw an error
-    throw new Error('Failed to parse the roadmap from OpenAI response');
+    // Now, generate detailed tasks for each roadmap step
+    const tasksPromises = roadmapData.roadmap.map(async (step, index) => {
+      const tasksResponse = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful AI assistant that creates educational task lists for learning new skills.",
+          },
+          {
+            role: "user",
+            content: `Create 5 detailed tasks for the step "${step.title}" in learning ${skill}. Each task should be specific, actionable, and help the user achieve this step. Return the response as a JSON array of objects with 'task', 'estimatedTime' (in minutes), and 'resources' (array of helpful links or materials) fields.`,
+          },
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const tasksData = JSON.parse(tasksResponse.choices[0].message.content);
+      
+      // Store the tasks with reference to the roadmap step
+      return {
+        stepId: index,
+        stepTitle: step.title,
+        tasks: tasksData.tasks
+      };
+    });
+    
+    // Wait for all tasks to be generated
+    const allTasks = await Promise.all(tasksPromises);
+    
+    // Store the generated tasks in a database or localStorage
+    // For now, we'll use the browser's localStorage in the client component
+    
+    return NextResponse.json({ 
+      success: true, 
+      data: roadmapData.roadmap,
+      tasks: allTasks
+    });
+  } catch (error) {
+    console.error("Error generating roadmap:", error);
+    return NextResponse.json(
+      { error: "Failed to generate roadmap: " + error.message },
+      { status: 500 }
+    );
   }
 } 

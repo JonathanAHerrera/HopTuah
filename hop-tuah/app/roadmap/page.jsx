@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
@@ -15,6 +16,7 @@ const fredoka = Fredoka({
 });
 
 export default function RoadmapPage() {
+  const router = useRouter();
   const [skill, setSkill] = useState("");
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -30,6 +32,7 @@ export default function RoadmapPage() {
     setError(null);
     
     try {
+      // First check if we can generate a roadmap
       const response = await fetch("/api/generateRoadMap", {
         method: "POST",
         headers: {
@@ -38,16 +41,16 @@ export default function RoadmapPage() {
         body: JSON.stringify({ skill }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.error || "Failed to generate roadmap");
       }
-
-      setRoadmap(data.data);
+      
+      // If successful, navigate to the skill-specific roadmap page
+      router.push(`/roadmap/${encodeURIComponent(skill.toLowerCase())}`);
+      
     } catch (err) {
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
@@ -174,7 +177,7 @@ export default function RoadmapPage() {
           <img
             src="/bunnyONTop.svg"
             alt="logo"
-            style={{ width: "7vw", height: "7vh" }}
+            style={{ width: "7vw", height: "7vh", marginRight: "10px" }}
           />
           <img
             src="/Words.svg"
@@ -267,7 +270,7 @@ export default function RoadmapPage() {
           }}
         >
           <Input
-            placeholder="Enter any skill you want to master..."
+            placeholder=""
             value={skill}
             onChange={(e) => setSkill(e.target.value)}
             onKeyDown={(e) => {
