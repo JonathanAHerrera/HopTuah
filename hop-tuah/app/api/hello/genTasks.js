@@ -14,7 +14,7 @@ const prompt = `
         Ensure the output is valid JSON.
 `;
 
-// Function to generate the 
+// Function to generate the subtasks and resources (including links)
 async function generateTasks() {
   try {
     // Initialize OpenAI client with the API key
@@ -22,11 +22,11 @@ async function generateTasks() {
       apiKey: apiKey,
     });
 
-    // Make the API request
+    // Make the API request for OpenAI, test on Postman
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: "You are an assistant that outputs valid JSON roadmaps." },
+        { role: "system", content: "You are an assistant that outputs valid JSON roadmaps with links to resources." },
         { role: "user", content: prompt }
       ],
       temperature: 0.7, // Adjust creativity level
