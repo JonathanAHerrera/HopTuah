@@ -14,7 +14,7 @@ const prompt = `
         Ensure the output is valid JSON.
 `;
 
-// Function to generate the 
+// Function to generate the subtasks and resources (including links)
 async function generateTasks() {
   try {
     // Initialize OpenAI client with the API key
