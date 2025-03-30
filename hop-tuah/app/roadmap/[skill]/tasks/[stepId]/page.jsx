@@ -156,6 +156,28 @@ export default function TasksPage() {
     router.push(`/roadmap/${params.skill}`);
   };
 
+  // Helper function to get the resource URL for a task
+  const getResourceUrl = (task, index) => {
+    // For debugging - log the task resources
+    console.log(`Task ${index} resources:`, task.resources);
+
+    // Check if this task has resources
+    if (task.resources && task.resources.length > 0) {
+      // Handle different resource formats
+      if (typeof task.resources[0] === 'object' && task.resources[0].url) {
+        // It's an object with a url property
+        return task.resources[0].url;
+      } else if (typeof task.resources[0] === 'string') {
+        // It's a string URL
+        return task.resources[0];
+      }
+    }
+    
+    // Fallback search query for this specific task
+    const searchQuery = `${params.skill} ${stepTitle} ${task.task}`;
+    return `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+  };
+
   if (loading) {
     return (
       <div
@@ -398,34 +420,29 @@ export default function TasksPage() {
                 style={{ 
                   fontSize: "1.5rem", 
                   color: "#24154A",
-                  textDecoration: completedTasks.includes(index) ? "line-through" : "none"
+                  textDecoration: completedTasks.includes(index) ? "line-through" : "none",
+                  flex: 1
                 }}
               >
                 {task.task}
               </label>
-              <div style={{ display: "flex", gap: "10px", marginLeft: "auto" }}>
-                {task.estimatedTime && (
-                  <div
-                    className={fredoka.className}
-                    style={{
-                      backgroundColor: "#F0F4F8",
-                      color: "#24154A",
-                      padding: "6px 12px",
-                      borderRadius: "20px",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    {task.estimatedTime} mins
-                  </div>
-                )}
-                <button 
-                  className={fredoka.className} 
-                  style={buttonStyle}
-                  onClick={() => window.open(task.resources?.[0], '_blank')}
+              
+              {/* Resource button with specific URL for each task */}
+              <button style={buttonStyle}>
+                <a
+                  href={getResourceUrl(task, index)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={fredoka.className}
+                  style={{
+                    color: "#24154A",
+                    textDecoration: "none",
+                    fontSize: "1.5rem",
+                  }}
                 >
                   Resource
-                </button>
-              </div>
+                </a>
+              </button>
             </div>
           ))}
         </div>
@@ -499,6 +516,30 @@ export default function TasksPage() {
             </button>
           </div>
         )}
+
+        {/* Add this after the "Step Completed! Return to Roadmap" button */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "30px" }}>
+          <button
+            onClick={() => {
+              // Clear the cached tasks for this step
+              localStorage.removeItem(`${params.skill}_step_${params.stepId}_tasks`);
+              // Refetch the tasks
+              fetchTasks(params.skill, stepTitle, params.stepId);
+            }}
+            className={fredoka.className}
+            style={{
+              background: "#f1f1f1",
+              color: "#666",
+              border: "none",
+              borderRadius: "50px",
+              padding: "10px 20px",
+              fontSize: "0.9rem",
+              cursor: "pointer",
+            }}
+          >
+            Regenerate Tasks
+          </button>
+        </div>
       </div>
     </div>
   );

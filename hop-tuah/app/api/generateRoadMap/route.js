@@ -34,48 +34,39 @@ export async function POST(request) {
     });
 
     // Parse the roadmap response
-    const roadmapData = JSON.parse(roadmapResponse.choices[0].message.content);
-    
-    // Now, generate detailed tasks for each roadmap step
-    const tasksPromises = roadmapData.roadmap.map(async (step, index) => {
-      const tasksResponse = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful AI assistant that creates educational task lists for learning new skills.",
-          },
-          {
-            role: "user",
-            content: `Create 5 detailed tasks for the step "${step.title}" in learning ${skill}. Each task should be specific, actionable, and help the user achieve this step. Return the response as a JSON array of objects with 'task', 'estimatedTime' (in minutes), and 'resources' (array of helpful links or materials) fields.`,
-          },
-        ],
-        response_format: { type: "json_object" },
+    let roadmapData;
+    try {
+      const content = roadmapResponse.choices[0].message.content;
+      roadmapData = JSON.parse(content);
+      
+      // Ensure the response contains the expected structure
+      if (!roadmapData.roadmap && Array.isArray(roadmapData)) {
+        // If it's already an array, use it directly
+        roadmapData = { roadmap: roadmapData };
+      } else if (!roadmapData.roadmap) {
+        // If it's an object but doesn't have a roadmap property
+        roadmapData = { roadmap: [roadmapData] };
+      }
+      
+      // Always return the data property with an array
+      return NextResponse.json({ 
+        success: true, 
+        data: roadmapData.roadmap || [] 
       });
+    } catch (parseError) {
+      console.error("Error parsing JSON response:", parseError);
+      console.error("Raw content:", roadmapResponse.choices[0].message.content);
       
-      const tasksData = JSON.parse(tasksResponse.choices[0].message.content);
-      
-      // Store the tasks with reference to the roadmap step
-      return {
-        stepId: index,
-        stepTitle: step.title,
-        tasks: tasksData.tasks
-      };
-    });
-    
-    // Wait for all tasks to be generated
-    const allTasks = await Promise.all(tasksPromises);
-    
-    // Store the generated tasks in a database or localStorage
-    // For now, we'll use the browser's localStorage in the client component
-    
-    return NextResponse.json({ 
-      success: true, 
-      data: roadmapData.roadmap,
-      tasks: allTasks
-    });
+      // Return a 500 error with proper JSON
+      return NextResponse.json(
+        { error: "Failed to parse roadmap data as JSON" },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Error generating roadmap:", error);
+    
+    // Return a 500 error with proper JSON
     return NextResponse.json(
       { error: "Failed to generate roadmap: " + error.message },
       { status: 500 }

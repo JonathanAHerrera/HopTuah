@@ -41,8 +41,13 @@ export default function RoadmapPage() {
         body: JSON.stringify({ skill }),
       });
 
+      const data = await response.json().catch(e => {
+        // Handle non-JSON responses
+        console.error("Failed to parse JSON:", e);
+        throw new Error("Server returned an invalid response");
+      });
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || "Failed to generate roadmap");
       }
       
